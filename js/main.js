@@ -5,12 +5,12 @@
 document.addEventListener('DOMContentLoaded', () => {
 
   /* --- Mobile nav toggle --- */
-  const toggle = document.querySelector('.nav-toggle');
-  const menu   = document.querySelector('.nav-menu');
-  if (toggle && menu) {
+  const toggle    = document.querySelector('.nav-toggle');
+  const headerNav = document.querySelector('.header-nav');
+  if (toggle && headerNav) {
     toggle.addEventListener('click', () => {
       toggle.classList.toggle('open');
-      menu.classList.toggle('open');
+      headerNav.classList.toggle('open');
     });
   }
 
@@ -28,8 +28,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
   /* --- Close menu on outside click --- */
   document.addEventListener('click', (e) => {
-    if (menu && toggle && !menu.contains(e.target) && !toggle.contains(e.target)) {
-      menu.classList.remove('open');
+    if (headerNav && toggle && !headerNav.contains(e.target) && !toggle.contains(e.target)) {
+      headerNav.classList.remove('open');
       toggle.classList.remove('open');
     }
   });

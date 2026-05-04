@@ -961,3 +961,27 @@ p { color: #444; }
   .values-grid { grid-template-columns: 1fr; }
   .ops-grid { grid-template-columns: 1fr; }
 }
+
+/* =============================================
+   CONTENT PROTECTION
+   ============================================= */
+body {
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+input, textarea, select {
+  -webkit-user-select: text;
+  -moz-user-select: text;
+  -ms-user-select: text;
+  user-select: text;
+}
+img {
+  -webkit-user-drag: none;
+  user-drag: none;
+  pointer-events: none;
+}
+a img, button img, .nav-logo img {
+  pointer-events: auto;
+}

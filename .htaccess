@@ -1,0 +1,83 @@
+# ================================================
+#  BIKO Industries — Apache Configuration
+#  GoDaddy cPanel Shared Hosting
+# ================================================
+
+# Force HTTPS
+RewriteEngine On
+RewriteCond %{HTTPS} off
+RewriteRule ^(.*)$ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
+
+# Remove trailing slash from non-directory URLs
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^(.*)/$ /$1 [L,R=301]
+
+# Disable directory browsing
+Options -Indexes
+
+# Custom error pages
+ErrorDocument 404 /404.html
+ErrorDocument 403 /404.html
+
+# ------------------------------------------------
+#  Security Headers
+# ------------------------------------------------
+<IfModule mod_headers.c>
+  Header always set X-Frame-Options "SAMEORIGIN"
+  Header always set X-Content-Type-Options "nosniff"
+  Header always set X-XSS-Protection "1; mode=block"
+  Header always set Referrer-Policy "strict-origin-when-cross-origin"
+  Header always set Permissions-Policy "geolocation=(), microphone=(), camera=()"
+  Header always set Strict-Transport-Security "max-age=31536000; includeSubDomains"
+</IfModule>
+
+# ------------------------------------------------
+#  Block Sensitive Files
+# ------------------------------------------------
+<FilesMatch "(\.git|\.env|\.log|\.bak|\.sql|\.htpasswd)$">
+  Order allow,deny
+  Deny from all
+</FilesMatch>
+
+# Block access to raw scraped source files (if ever uploaded)
+<FilesMatch "^www_bikoindustries_com">
+  Order allow,deny
+  Deny from all
+</FilesMatch>
+
+# ------------------------------------------------
+#  Cache Static Assets
+# ------------------------------------------------
+<IfModule mod_expires.c>
+  ExpiresActive On
+  ExpiresByType image/jpeg        "access plus 1 year"
+  ExpiresByType image/png         "access plus 1 year"
+  ExpiresByType image/webp        "access plus 1 year"
+  ExpiresByType image/gif         "access plus 1 year"
+  ExpiresByType image/svg+xml     "access plus 1 year"
+  ExpiresByType text/css          "access plus 1 month"
+  ExpiresByType application/javascript "access plus 1 month"
+  ExpiresByType application/pdf   "access plus 1 month"
+  ExpiresByType text/html         "access plus 1 day"
+</IfModule>
+
+# ------------------------------------------------
+#  Gzip Compression
+# ------------------------------------------------
+<IfModule mod_deflate.c>
+  AddOutputFilterByType DEFLATE text/html
+  AddOutputFilterByType DEFLATE text/css
+  AddOutputFilterByType DEFLATE application/javascript
+  AddOutputFilterByType DEFLATE text/plain
+  AddOutputFilterByType DEFLATE application/json
+</IfModule>
+
+# ------------------------------------------------
+#  Hotlink Protection (Images)
+# ------------------------------------------------
+<IfModule mod_rewrite.c>
+  RewriteCond %{HTTP_REFERER} !^$
+  RewriteCond %{HTTP_REFERER} !^https?://(www\.)?bikoindustries\.com [NC]
+  RewriteCond %{HTTP_REFERER} !^https?://dlshelton\.github\.io [NC]
+  RewriteRule \.(jpg|jpeg|png|webp|gif|svg)$ - [F,NC]
+</IfModule>

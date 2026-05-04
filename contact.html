@@ -122,7 +122,10 @@
         <div class="contact-form-card">
           <h3>Send Us a Message</h3>
           <p>Fill out the form below and a member of our team will be in touch shortly.</p>
-          <form id="contact-form" action="https://formspree.io/f/xpwqkgnv" method="POST">
+          <!-- FORMSPREE: Sign up at formspree.io, create a form, then replace xpwqkgnv with your form ID -->
+          <form id="contact-form" class="js-contact-form" action="https://formspree.io/f/xpwqkgnv" method="POST">
+            <!-- Honeypot spam trap -->
+            <input type="text" name="_gotcha" style="display:none" tabindex="-1" autocomplete="off" />
             <div class="form-row">
               <div class="form-group">
                 <label for="fname">First Name *</label>

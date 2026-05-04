@@ -85,11 +85,11 @@ document.addEventListener('DOMContentLoaded', () => {
     const target = parseInt(el.dataset.target, 10);
     const duration = 2000;
     const step = target / (duration / 16);
-    let current = 0;
+    let count = 0;
     const update = () => {
-      current = Math.min(current + step, target);
-      el.textContent = Math.floor(current).toLocaleString();
-      if (current < target) requestAnimationFrame(update);
+      count = Math.min(count + step, target);
+      el.textContent = Math.floor(count).toLocaleString();
+      if (count < target) requestAnimationFrame(update);
     };
     requestAnimationFrame(update);
   }
@@ -127,15 +127,21 @@ document.addEventListener('DOMContentLoaded', () => {
     if (header) header.classList.toggle('scrolled', window.scrollY > 10);
   }, { passive: true });
 
-  /* --- Contact form (Formspree) --- */
+  /* --- Contact form (Formspree async) --- */
   const form = document.querySelector('.js-contact-form');
   if (form) {
     form.addEventListener('submit', async (e) => {
       e.preventDefault();
-      const btn = form.querySelector('[type="submit"]');
-      const orig = btn.textContent;
+      const btn       = form.querySelector('[type="submit"]');
+      const successEl = document.getElementById('form-success');
+      const errorEl   = document.getElementById('form-error');
+      const origText  = btn.textContent;
+
       btn.textContent = 'Sending…';
       btn.disabled = true;
+      if (successEl) successEl.style.display = 'none';
+      if (errorEl)   errorEl.style.display   = 'none';
+
       try {
         const res = await fetch(form.action, {
           method: 'POST',
@@ -143,17 +149,79 @@ document.addEventListener('DOMContentLoaded', () => {
           headers: { 'Accept': 'application/json' }
         });
         if (res.ok) {
-          form.innerHTML = '<p style="text-align:center;padding:32px;font-size:1.1rem;color:var(--green-deep);font-weight:600;">✓ Message sent! We\'ll be in touch shortly.</p>';
+          if (successEl) successEl.style.display = 'block';
+          btn.textContent = '✓ Message Sent!';
+          form.reset();
+          setTimeout(() => {
+            btn.textContent = origText;
+            btn.disabled = false;
+            if (successEl) successEl.style.display = 'none';
+          }, 6000);
         } else {
-          btn.textContent = orig;
+          const data = await res.json().catch(() => ({}));
+          if (errorEl) errorEl.style.display = 'block';
+          btn.textContent = origText;
           btn.disabled = false;
-          alert('Something went wrong. Please email us directly at info@bikoindustries.com');
         }
       } catch {
-        btn.textContent = orig;
+        if (errorEl) errorEl.style.display = 'block';
+        btn.textContent = origText;
         btn.disabled = false;
-        alert('Something went wrong. Please email us directly at info@bikoindustries.com');
       }
     });
   }
+
+  /* =============================================
+     CONTENT PROTECTION
+     ============================================= */
+
+  /* Disable right-click context menu */
+  document.addEventListener('contextmenu', (e) => {
+    e.preventDefault();
+    return false;
+  });
+
+  /* Block copy / cut */
+  document.addEventListener('copy', (e) => {
+    const active = document.activeElement;
+    const inForm = active && (active.tagName === 'INPUT' || active.tagName === 'TEXTAREA' || active.tagName === 'SELECT');
+    if (!inForm) {
+      e.preventDefault();
+      return false;
+    }
+  });
+  document.addEventListener('cut', (e) => {
+    const active = document.activeElement;
+    const inForm = active && (active.tagName === 'INPUT' || active.tagName === 'TEXTAREA');
+    if (!inForm) {
+      e.preventDefault();
+      return false;
+    }
+  });
+
+  /* Block keyboard shortcuts: view-source, save, select-all, dev-tools */
+  document.addEventListener('keydown', (e) => {
+    const active = document.activeElement;
+    const inForm = active && (active.tagName === 'INPUT' || active.tagName === 'TEXTAREA' || active.tagName === 'SELECT');
+    if (inForm) return;
+
+    const ctrl = e.ctrlKey || e.metaKey;
+    const key  = e.key.toLowerCase();
+
+    if (
+      (ctrl && (key === 'u' || key === 's' || key === 'a' || key === 'p')) ||
+      e.key === 'F12' ||
+      (ctrl && e.shiftKey && (key === 'i' || key === 'j' || key === 'c' || key === 'k'))
+    ) {
+      e.preventDefault();
+      return false;
+    }
+  });
+
+  /* Disable image drag */
+  document.querySelectorAll('img').forEach(img => {
+    img.setAttribute('draggable', 'false');
+    img.addEventListener('dragstart', (e) => e.preventDefault());
+  });
+
 });

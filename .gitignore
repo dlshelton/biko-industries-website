@@ -1,0 +1,8 @@
+# Raw scraped source files — not part of the site build
+www_bikoindustries_com*.html
+www_bikoindustries_com*.txt
+
+# OS / editor noise
+.DS_Store
+Thumbs.db
+*.swp

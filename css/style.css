@@ -990,6 +990,13 @@ p { color: #444; }
   .ops-grid { grid-template-columns: 1fr; }
 }
 
+/* --- Formspree field errors --- */
+.field-error { display: block; color: #ca1f26; font-size: .78rem; margin-top: 4px; min-height: 1em; }
+input[aria-invalid="true"], textarea[aria-invalid="true"], select[aria-invalid="true"] {
+  border-color: #ca1f26 !important;
+  outline: none;
+}
+
 /* =============================================
    CONTENT PROTECTION
    ============================================= */

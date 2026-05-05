@@ -127,49 +127,6 @@ document.addEventListener('DOMContentLoaded', () => {
     if (header) header.classList.toggle('scrolled', window.scrollY > 10);
   }, { passive: true });
 
-  /* --- Contact form (Formspree async) --- */
-  const form = document.querySelector('.js-contact-form');
-  if (form) {
-    form.addEventListener('submit', async (e) => {
-      e.preventDefault();
-      const btn       = form.querySelector('[type="submit"]');
-      const successEl = document.getElementById('form-success');
-      const errorEl   = document.getElementById('form-error');
-      const origText  = btn.textContent;
-
-      btn.textContent = 'Sending…';
-      btn.disabled = true;
-      if (successEl) successEl.style.display = 'none';
-      if (errorEl)   errorEl.style.display   = 'none';
-
-      try {
-        const res = await fetch(form.action, {
-          method: 'POST',
-          body: new FormData(form),
-          headers: { 'Accept': 'application/json' }
-        });
-        if (res.ok) {
-          if (successEl) successEl.style.display = 'block';
-          btn.textContent = '✓ Message Sent!';
-          form.reset();
-          setTimeout(() => {
-            btn.textContent = origText;
-            btn.disabled = false;
-            if (successEl) successEl.style.display = 'none';
-          }, 6000);
-        } else {
-          const data = await res.json().catch(() => ({}));
-          if (errorEl) errorEl.style.display = 'block';
-          btn.textContent = origText;
-          btn.disabled = false;
-        }
-      } catch {
-        if (errorEl) errorEl.style.display = 'block';
-        btn.textContent = origText;
-        btn.disabled = false;
-      }
-    });
-  }
 
   /* =============================================
      CONTENT PROTECTION

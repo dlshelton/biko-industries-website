@@ -132,6 +132,36 @@ document.addEventListener('DOMContentLoaded', () => {
      CONTENT PROTECTION
      ============================================= */
 
+  /* Anti-iframe: redirect top if page is embedded */
+  if (window.top !== window.self) {
+    try { window.top.location = window.self.location; } catch (e) { window.self.location = 'about:blank'; }
+  }
+
+  /* Disable print dialog */
+  window.print = function () { return false; };
+
+  /* Block text selection outside form fields */
+  document.addEventListener('selectstart', (e) => {
+    const t = e.target;
+    if (t && (t.tagName === 'INPUT' || t.tagName === 'TEXTAREA' || t.tagName === 'SELECT')) return;
+    e.preventDefault();
+  });
+
+  /* Console watermark — discourages casual scraping, clears devtools log */
+  (function consoleGuard() {
+    const style1 = 'color:#9ccc7a;font-size:18px;font-weight:bold;background:#1a2235;padding:6px 12px;border-radius:4px;';
+    const style2 = 'color:#ca1f26;font-size:12px;font-weight:bold;';
+    const style3 = 'color:#666;font-size:11px;';
+    function stamp() {
+      console.clear();
+      console.log('%c BIKO Industries ', style1);
+      console.log('%c⚠ Proprietary content — unauthorized copying is prohibited.', style2);
+      console.log('%chttps://bikoindustries.com', style3);
+    }
+    stamp();
+    setInterval(stamp, 3000);
+  })();
+
   /* Disable right-click context menu */
   document.addEventListener('contextmenu', (e) => {
     e.preventDefault();
